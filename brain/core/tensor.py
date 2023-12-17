@@ -1,7 +1,7 @@
 """
 title : tensor.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/14
+update : @tarickali 23/12/17
 """
 
 from __future__ import annotations
@@ -47,16 +47,16 @@ class Tensor:
 
     def __truediv__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
-        return Tensor(self.array / other.array)
+        return Tensor(array=self.array / other.array)
 
-    def __radd__(self, other: Tensor | TensorLike) -> Tensor:
-        return self + other
+    # def __radd__(self, other: Tensor | TensorLike) -> Tensor:
+    #     return self + other
 
-    def __rsub__(self, other: Tensor | TensorLike) -> Tensor:
-        return self - other
+    # def __rsub__(self, other: Tensor | TensorLike) -> Tensor:
+    #     return self - other
 
-    def __rmul__(self, other: Tensor | TensorLike) -> Tensor:
-        return self * other
+    # def __rmul__(self, other: Tensor | TensorLike) -> Tensor:
+    #     return self * other
 
     # ---------------------------------------------------------#
     ##################### Unary Operations #####################
@@ -68,7 +68,7 @@ class Tensor:
         return Tensor(array=self.array**other)
 
     def __neg__(self) -> Tensor:
-        return Tensor(-self.array)
+        return Tensor(array=-self.array)
 
     # ---------------------------------------------------------#
     ################## Comparison Operations ##################
@@ -76,27 +76,27 @@ class Tensor:
 
     def __eq__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
-        return Tensor(data=self.data == other.data)
+        return Tensor(array=self.array == other.array)
 
     def __ne__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
-        return Tensor(data=self.data != other.data)
+        return Tensor(array=self.array != other.array)
 
     def __ge__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
-        return Tensor(data=self.data >= other.data)
+        return Tensor(array=self.array >= other.array)
 
     def __gt__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
-        return Tensor(data=self.data > other.data)
+        return Tensor(array=self.array > other.array)
 
     def __le__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
-        return Tensor(data=self.data <= other.data)
+        return Tensor(array=self.array <= other.array)
 
     def __lt__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
-        return Tensor(data=self.data < other.data)
+        return Tensor(array=self.array < other.array)
 
     @property
     def T(self) -> Tensor:

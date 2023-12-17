@@ -1,7 +1,7 @@
 """
 title : node.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/14
+update : @tarickali 23/12/17
 """
 
 from __future__ import annotations
@@ -118,14 +118,14 @@ class Node:
     def __truediv__(self, other: Node | NodeLike) -> Node:
         return self * other**-1
 
-    def __radd__(self, other: Node | NodeLike) -> Node:
-        return self + other
+    # def __radd__(self, other: Node | NodeLike) -> Node:
+    #     return self + other
 
-    def __rsub__(self, other: Node | NodeLike) -> Node:
-        return self - other
+    # def __rsub__(self, other: Node | NodeLike) -> Node:
+    #     return self - other
 
-    def __rmul__(self, other: Node | NodeLike) -> Node:
-        return self * other
+    # def __rmul__(self, other: Node | NodeLike) -> Node:
+    #     return self * other
 
     # ---------------------------------------------------------#
     ##################### Unary Operations #####################
@@ -170,19 +170,19 @@ class Node:
         other = convert_node_input(other)
         return Node(data=self.data != other.data)
 
-    def __ge__(self, other: Node | NodeLike) -> Tensor:
+    def __ge__(self, other: Node | NodeLike) -> Node:
         other = convert_node_input(other)
         return Node(data=self.data >= other.data)
 
-    def __gt__(self, other: Node | NodeLike) -> Tensor:
+    def __gt__(self, other: Node | NodeLike) -> Node:
         other = convert_node_input(other)
         return Node(data=self.data > other.data)
 
-    def __le__(self, other: Node | NodeLike) -> Tensor:
+    def __le__(self, other: Node | NodeLike) -> Node:
         other = convert_node_input(other)
         return Node(data=self.data <= other.data)
 
-    def __lt__(self, other: Tensor | Array | Numeric) -> Tensor:
+    def __lt__(self, other: Node | NodeLike) -> Node:
         other = convert_node_input(other)
         return Node(data=self.data < other.data)
 
