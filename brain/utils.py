@@ -19,8 +19,8 @@ def flatten(x: NodeLike) -> Node:
     output = Node(data)
 
     def reverse():
-        grad = Tensor(np.ones_like(arr))
-        x.grad = grad * output
+        grad = Tensor(output.grad.array.reshape(arr.shape))
+        x.grad = grad
 
     output.forward = "flatten"
     output.reverse = reverse

@@ -76,6 +76,9 @@ class Module(ABC):
             "hyperparameters": self.hyperparameters,
         }
 
+    def __call__(self, X: Node) -> Node:
+        return self.forward(X)
+
     @property
     @abstractmethod
     def hyperparameters(self) -> dict[str, Any]:

@@ -38,14 +38,16 @@ class Linear(Module):
         if self.include_bias:
             self.bias_init = initializer_factory(bias_initializer)
 
+        self.init_parameters()
+
     def init_parameters(self) -> None:
         """Initialize the parameters of the Module."""
 
-        self.parameters["W"] = self.weight_init((self.input_dim, self.output_dim))
+        self.parameters["W"] = Node(self.weight_init((self.input_dim, self.output_dim)))
         assert self.parameters["W"].shape == (self.input_dim, self.output_dim)
 
         if self.include_bias:
-            self.parameters["b"] = self.bias_init((self.output_dim,))
+            self.parameters["b"] = Node(self.bias_init((self.output_dim,)))
             assert self.parameters["b"].shape == (self.output_dim,)
 
     def forward(self, X: Node) -> Node:
