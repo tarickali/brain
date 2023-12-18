@@ -1,7 +1,7 @@
 """
 title : utils.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/13
+update : @tarickali 23/12/17
 """
 
 import numpy as np
@@ -83,7 +83,7 @@ def shrink_tensor(tensor: Tensor, shape: Shape) -> Tensor:
         else:
             # If the broadcastable shape is a scalar, then take the full mean
             if len(shape) < 1:
-                array = np.mean(array).reshape(shape)
+                array = np.sum(array).reshape(shape)
             # Otherwise, try to broadcast the array to the shape
             # Do nothing if it fails
             else:
@@ -100,6 +100,6 @@ def shrink_tensor(tensor: Tensor, shape: Shape) -> Tensor:
                         if array.shape[i] != inter_shape[i]:
                             axes.append(i)
                     # Take the mean across the axes that are not the same to collect values
-                    array = np.mean(array, axis=tuple(axes)).reshape(shape)
+                    array = np.sum(array, axis=tuple(axes)).reshape(shape)
 
     return Tensor(array)

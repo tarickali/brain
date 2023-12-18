@@ -1,14 +1,14 @@
 """
 title : functional.py
 create : @tarickali 23/12/15
-update : @tarickali 23/12/16
+update : @tarickali 23/12/17
 """
 
 import numpy as np
-from brain.core.types import arr, Numeric
+from brain.core.types import Array, Numeric
 from brain.core import Node, Tensor
 
-NodeLike = Node | Tensor | arr | Numeric
+NodeLike = Node | Tensor | Array | Numeric
 
 __all__ = [
     "identity",
@@ -32,7 +32,7 @@ def identity(x: NodeLike) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = np.ones_like(x)
+        grad = Tensor(np.ones_like(x))
         x.grad = grad * output.grad
 
     output.forward = "identity"
@@ -41,7 +41,7 @@ def identity(x: NodeLike) -> Node:
     return output
 
 
-def affine(x: NodeLike, slope: float, intercept: float) -> Node:
+def affine(x: NodeLike, slope: float = 1.0, intercept: float = 0.0) -> Node:
     x = x if isinstance(x, Node) else Node(x)
     arr = x.data.array
     data = slope * arr + intercept
@@ -50,7 +50,7 @@ def affine(x: NodeLike, slope: float, intercept: float) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = np.full_like(arr, slope)
+        grad = Tensor(np.full_like(arr, slope))
         x.grad = grad * output.grad
 
     output.forward = "affine"
@@ -67,7 +67,7 @@ def relu(x: NodeLike) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = (arr > 0).astype(arr.dtype)
+        grad = Tensor((arr > 0).astype(arr.dtype))
         x.grad = grad * output.grad
 
     output.forward = "relu"
@@ -84,7 +84,7 @@ def sigmoid(x: NodeLike) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = data * (1 - data)
+        grad = Tensor(data * (1 - data))
         x.grad = grad * output.grad
 
     output.forward = "sigmoid"
@@ -101,7 +101,7 @@ def tanh(x: NodeLike) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = 1 - data**2
+        grad = Tensor(1 - data**2)
         x.grad = grad * output.grad
 
     output.forward = "tanh"
@@ -118,7 +118,9 @@ def leaky_relu(x: NodeLike, alpha: float = 0.0) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = (arr > 0).astype(arr.dtype) + (arr <= 0).astype(arr.dtype) * alpha
+        grad = Tensor(
+            (arr > 0).astype(arr.dtype) + (arr <= 0).astype(arr.dtype) * alpha
+        )
         x.grad = grad * output.grad
 
     output.forward = "leaky_relu"
@@ -130,12 +132,12 @@ def leaky_relu(x: NodeLike, alpha: float = 0.0) -> Node:
 def elu(x: NodeLike, alpha: float) -> Node:
     x = x if isinstance(x, Node) else Node(x)
     arr = x.data.array
-    data = np.where(arr >= 0, x, alpha * (np.exp(arr) - 1))
+    data = np.where(arr >= 0, arr, alpha * (np.exp(arr) - 1))
     output = Node(data)
     output.add_children((x,))
 
     def reverse():
-        grad = np.where(arr >= 0, np.ones_like(arr), alpha * np.exp(arr))
+        grad = Tensor(np.where(arr >= 0, np.ones_like(arr), alpha * np.exp(arr)))
         x.grad = grad * output.grad
 
     output.forward = "elu"
@@ -155,8 +157,8 @@ def selu(x: NodeLike) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = np.where(
-            arr >= 0, scale * np.ones_like(arr), alpha * scale * np.exp(arr)
+        grad = Tensor(
+            np.where(arr >= 0, scale * np.ones_like(arr), alpha * scale * np.exp(arr))
         )
         x.grad = grad * output.grad
 
@@ -175,7 +177,7 @@ def softplus(x: NodeLike) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = e / (1 + e)
+        grad = Tensor(e / (1 + e))
         x.grad = grad * output.grad
 
     output.forward = "softplus"
@@ -193,7 +195,7 @@ def softmax(x: NodeLike) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = np.ones_like(arr)
+        grad = Tensor(np.ones_like(arr))
         x.grad = grad * output.grad
 
     output.forward = "softmax"

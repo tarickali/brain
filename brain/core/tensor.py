@@ -49,15 +49,6 @@ class Tensor:
         other = convert_tensor_input(other)
         return Tensor(array=self.array / other.array)
 
-    # def __radd__(self, other: Tensor | TensorLike) -> Tensor:
-    #     return self + other
-
-    # def __rsub__(self, other: Tensor | TensorLike) -> Tensor:
-    #     return self - other
-
-    # def __rmul__(self, other: Tensor | TensorLike) -> Tensor:
-    #     return self * other
-
     # ---------------------------------------------------------#
     ##################### Unary Operations #####################
     # ---------------------------------------------------------#
@@ -97,6 +88,9 @@ class Tensor:
     def __lt__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
         return Tensor(array=self.array < other.array)
+
+    def __repr__(self) -> str:
+        return f"Tensor(array={self.array}, dtype={self.dtype}, shape={self.shape})"
 
     @property
     def T(self) -> Tensor:

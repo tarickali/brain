@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 from brain.core.types import Array, Numeric, Shape, Dtype
 from brain.core.tensor import Tensor
-from brain.core.tensor_utils import zeros_like, expand_tensor, shrink_tensor
+from brain.core.tensor_utils import zeros_like, ones_like, expand_tensor, shrink_tensor
 
 __all__ = ["Node"]
 
@@ -34,6 +34,23 @@ class Node:
 
     def add_children(self, nodes: tuple[Node, ...]) -> None:
         self.children += nodes
+
+    def backward(self) -> None:
+        order = list[Node]()
+        visited = set[Node]()
+
+        def build(x: Node) -> None:
+            if x not in visited:
+                visited.add(x)
+                for child in x.children:
+                    build(child)
+                order.append(x)
+
+        build(self)
+
+        self.grad = ones_like(self.data)
+        for x in reversed(order):
+            x.reverse()
 
     # ---------------------------------------------------------#
     #################### Binary Operations ####################
@@ -118,15 +135,6 @@ class Node:
     def __truediv__(self, other: Node | NodeLike) -> Node:
         return self * other**-1
 
-    # def __radd__(self, other: Node | NodeLike) -> Node:
-    #     return self + other
-
-    # def __rsub__(self, other: Node | NodeLike) -> Node:
-    #     return self - other
-
-    # def __rmul__(self, other: Node | NodeLike) -> Node:
-    #     return self * other
-
     # ---------------------------------------------------------#
     ##################### Unary Operations #####################
     # ---------------------------------------------------------#
@@ -186,8 +194,11 @@ class Node:
         other = convert_node_input(other)
         return Node(data=self.data < other.data)
 
+    def __hash__(self) -> int:
+        return id(self)
+
     def __repr__(self) -> str:
-        return f"Node(data={self.data.array}, dtype={self.data.dtype}, shape={self.data.shape})"
+        return f"Node(data={self.data})"
 
     @property
     def shape(self) -> Shape:
