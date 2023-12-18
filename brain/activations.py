@@ -1,7 +1,7 @@
 """
 title : activations.py
 create : @tarickali 23/12/15
-update : @tarickali 23/12/15
+update : @tarickali 23/12/17
 """
 
 from brain.core import Node, Activation
@@ -13,7 +13,6 @@ __all__ = [
     "ReLU",
     "Sigmoid",
     "Tanh",
-    "LeakyReLU",
     "ELU",
     "SELU",
     "SoftPlus",
@@ -35,7 +34,8 @@ class Identity(Activation):
 class Affine(Activation):
     """Affine Activation.
 
-    Computes the function `f(x) = slope * x + intercept`.
+    Parameterized by `slope` [float] and `intercept` [float], computes the
+    function `f(x) = slope * x + intercept`.
 
     Parameters
     ----------
@@ -44,7 +44,7 @@ class Affine(Activation):
 
     """
 
-    def __init__(self, slope: float, intercept: float) -> None:
+    def __init__(self, slope: float = 1.0, intercept: float = 0.0) -> None:
         super().__init__()
         self.slope = slope
         self.intercept = intercept
@@ -56,12 +56,22 @@ class Affine(Activation):
 class ReLU(Activation):
     """ReLU Activation
 
-    Computes the elementwise function `f(x) = max(x, 0)`.
+    Parameterized by `alpha` [float], computes the function
+    ```
+    f(x) = {
+        x : x >= 0,
+        alpha * x : x < 0
+    }
+    ```.
 
     """
 
+    def __init__(self, alpha: float = 0.0) -> None:
+        super().__init__()
+        self.alpha = alpha
+
     def func(self, x: Node) -> Node:
-        return relu(x)
+        return relu(x, self.alpha)
 
 
 class Sigmoid(Activation):
@@ -84,27 +94,6 @@ class Tanh(Activation):
 
     def func(self, x: Node) -> Node:
         return tanh(x)
-
-
-class LeakyReLU(Activation):
-    """LeakyReLU Activation
-
-    Parameterized by `alpha` [float], computes the function
-    ```
-    f(x) = {
-        x : x >= 0,
-        alpha * x : x < 0
-    }
-    ```.
-
-    """
-
-    def __init__(self, alpha: float = 0.0) -> None:
-        super().__init__()
-        self.alpha = alpha
-
-    def func(self, x: Node) -> Node:
-        return leaky_relu(x, self.alpha)
 
 
 class ELU(Activation):

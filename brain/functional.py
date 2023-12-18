@@ -16,7 +16,6 @@ __all__ = [
     "relu",
     "sigmoid",
     "tanh",
-    "leaky_relu",
     "elu",
     "selu",
     "softplus",
@@ -59,15 +58,17 @@ def affine(x: NodeLike, slope: float = 1.0, intercept: float = 0.0) -> Node:
     return output
 
 
-def relu(x: NodeLike) -> Node:
+def relu(x: NodeLike, alpha: float = 0.0) -> Node:
     x = x if isinstance(x, Node) else Node(x)
     arr = x.data.array
-    data = np.maximum(arr, 0)
+    data = np.maximum(0, arr) + alpha * np.minimum(0, arr)
     output = Node(data)
     output.add_children((x,))
 
     def reverse():
-        grad = Tensor((arr > 0).astype(arr.dtype))
+        grad = Tensor(
+            (arr > 0).astype(arr.dtype) + alpha * (arr <= 0).astype(arr.dtype)
+        )
         x.grad = grad * output.grad
 
     output.forward = "relu"
@@ -105,25 +106,6 @@ def tanh(x: NodeLike) -> Node:
         x.grad = grad * output.grad
 
     output.forward = "tanh"
-    output.reverse = reverse
-
-    return output
-
-
-def leaky_relu(x: NodeLike, alpha: float = 0.0) -> Node:
-    x = x if isinstance(x, Node) else Node(x)
-    arr = x.data.array
-    data = np.maximum(0, arr) + np.minimum(0, arr) * alpha
-    output = Node(data)
-    output.add_children((x,))
-
-    def reverse():
-        grad = Tensor(
-            (arr > 0).astype(arr.dtype) + (arr <= 0).astype(arr.dtype) * alpha
-        )
-        x.grad = grad * output.grad
-
-    output.forward = "leaky_relu"
     output.reverse = reverse
 
     return output
@@ -186,16 +168,23 @@ def softplus(x: NodeLike) -> Node:
     return output
 
 
-def softmax(x: NodeLike) -> Node:
+def softmax(x: NodeLike, axis: int = 0) -> Node:
     x = x if isinstance(x, Node) else Node(x)
     arr = x.data.array
-    e = np.exp(arr)
-    data = e / np.sum(e, axis=1, keepdims=True)
+    e = np.exp(arr - np.max(arr))
+    data = e / np.sum(e, axis=axis, keepdims=True)
+    # print("datashape", data.shape)
+    # assert data.shape == x.shape
     output = Node(data)
     output.add_children((x,))
 
     def reverse():
         grad = Tensor(np.ones_like(arr))
+        # print("data", data.shape)
+        # D = np.diagflat(data) - np.outer(data, data)
+        # D = np.mean(D, axis=0)
+        # grad = Tensor(D.reshape(data.shape))
+        # print("grad", grad.shape)
         x.grad = grad * output.grad
 
     output.forward = "softmax"

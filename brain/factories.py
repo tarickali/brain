@@ -1,7 +1,7 @@
 """
 title : factories.py
 create : @tarickali 23/12/15
-update : @tarickali 23/12/15
+update : @tarickali 23/12/17
 """
 
 from typing import Any
@@ -122,8 +122,6 @@ def activation_factory(
             return ELU(**params)
         case "identity":
             return Identity()
-        case "leaky_relu":
-            return LeakyReLU(**params)
         case "relu":
             return ReLU()
         case "selu":
