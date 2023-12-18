@@ -1,7 +1,7 @@
 """
 title : node.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/17
+update : @tarickali 23/12/18
 """
 
 from __future__ import annotations
@@ -147,7 +147,8 @@ class Node:
         output.add_children((self,))
 
         def reverse():
-            self.grad += (other * self.data ** (other - 1)) * output.grad
+            grad = Tensor(other * self.data.array ** (other - 1))
+            self.grad += grad * output.grad
 
         output.forward = "pow"
         output.reverse = reverse

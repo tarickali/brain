@@ -1,7 +1,7 @@
 """
 title : functional.py
 create : @tarickali 23/12/15
-update : @tarickali 23/12/17
+update : @tarickali 23/12/18
 """
 
 import numpy as np
@@ -25,6 +25,7 @@ __all__ = [
 
 def identity(x: NodeLike) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     data = arr
     output = Node(data)
@@ -42,6 +43,7 @@ def identity(x: NodeLike) -> Node:
 
 def affine(x: NodeLike, slope: float = 1.0, intercept: float = 0.0) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     data = slope * arr + intercept
     output = Node(data)
@@ -60,15 +62,14 @@ def affine(x: NodeLike, slope: float = 1.0, intercept: float = 0.0) -> Node:
 
 def relu(x: NodeLike, alpha: float = 0.0) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     data = np.maximum(0, arr) + alpha * np.minimum(0, arr)
     output = Node(data)
     output.add_children((x,))
 
     def reverse():
-        grad = Tensor(
-            (arr > 0).astype(arr.dtype) + alpha * (arr <= 0).astype(arr.dtype)
-        )
+        grad = Tensor(alpha + (1 - alpha) * np.heaviside(arr, 0, dtype=arr.dtype))
         x.grad = grad * output.grad
 
     output.forward = "relu"
@@ -79,6 +80,7 @@ def relu(x: NodeLike, alpha: float = 0.0) -> Node:
 
 def sigmoid(x: NodeLike) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     data = 1 / (1 + np.exp(-arr))
     output = Node(data)
@@ -96,6 +98,7 @@ def sigmoid(x: NodeLike) -> Node:
 
 def tanh(x: NodeLike) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     data = np.tanh(arr)
     output = Node(data)
@@ -113,6 +116,7 @@ def tanh(x: NodeLike) -> Node:
 
 def elu(x: NodeLike, alpha: float) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     data = np.where(arr >= 0, arr, alpha * (np.exp(arr) - 1))
     output = Node(data)
@@ -129,10 +133,11 @@ def elu(x: NodeLike, alpha: float) -> Node:
 
 
 def selu(x: NodeLike) -> Node:
+    x = x if isinstance(x, Node) else Node(x)
+
     alpha = 1.6732632423543772848170429916717
     scale = 1.0507009873554804934193349852946
 
-    x = x if isinstance(x, Node) else Node(x)
     arr = x.data.array
     data = scale * (np.maximum(0, arr) + np.minimum(0, alpha * (np.exp(arr) - 1)))
     output = Node(data)
@@ -152,6 +157,7 @@ def selu(x: NodeLike) -> Node:
 
 def softplus(x: NodeLike) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     e = np.exp(arr)
     data = np.log(1 + e)
@@ -168,23 +174,17 @@ def softplus(x: NodeLike) -> Node:
     return output
 
 
-def softmax(x: NodeLike, axis: int = 0) -> Node:
+def softmax(x: NodeLike, axis: int = -1) -> Node:
     x = x if isinstance(x, Node) else Node(x)
+
     arr = x.data.array
     e = np.exp(arr - np.max(arr))
     data = e / np.sum(e, axis=axis, keepdims=True)
-    # print("datashape", data.shape)
-    # assert data.shape == x.shape
     output = Node(data)
     output.add_children((x,))
 
     def reverse():
         grad = Tensor(np.ones_like(arr))
-        # print("data", data.shape)
-        # D = np.diagflat(data) - np.outer(data, data)
-        # D = np.mean(D, axis=0)
-        # grad = Tensor(D.reshape(data.shape))
-        # print("grad", grad.shape)
         x.grad = grad * output.grad
 
     output.forward = "softmax"

@@ -4,5 +4,6 @@ from .tensor import Tensor
 from .node import Node
 from .initializer import Initializer
 from .activation import Activation
+from .loss import Loss
 from .module import Module
 from .model import Model
