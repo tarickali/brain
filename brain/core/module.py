@@ -1,7 +1,7 @@
 """
 title : module.py
 create : @tarickali 23/12/17
-update : @tarickali 23/12/17
+update : @tarickali 23/12/18
 """
 
 from typing import Any
@@ -41,7 +41,7 @@ class Module(ABC):
 
         return
 
-    def zero_gradients(self) -> None:
+    def zero_grad(self) -> None:
         """Clear the gradients for each parameter in the Module."""
 
         for param in self.parameters:

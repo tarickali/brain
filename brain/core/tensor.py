@@ -1,7 +1,7 @@
 """
 title : tensor.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/17
+update : @tarickali 23/12/18
 """
 
 from __future__ import annotations
@@ -15,8 +15,11 @@ TensorLike = Array | Numeric
 
 
 class Tensor:
-    def __init__(self, array: TensorLike, dtype: Dtype = None) -> None:
-        self.array = np.array(array, dtype=dtype)
+    def __init__(self, array: Tensor | TensorLike, dtype: Dtype = float) -> None:
+        if isinstance(array, Tensor):
+            self.array = np.array(array.array, dtype=dtype)
+        else:
+            self.array = np.array(array, dtype=dtype)
 
     def cast(self, dtype: Dtype) -> None:
         if dtype != self.dtype:
@@ -48,6 +51,19 @@ class Tensor:
     def __truediv__(self, other: Tensor | TensorLike) -> Tensor:
         other = convert_tensor_input(other)
         return Tensor(array=self.array / other.array)
+
+    def __radd__(self, other: Tensor | TensorLike) -> Tensor:
+        return self + other
+
+    def __rsub__(self, other: Tensor | TensorLike) -> Tensor:
+        return -self + other
+
+    def __rmul__(self, other: Tensor | TensorLike) -> Tensor:
+        return self * other
+
+    def __rtruediv__(self, other: Tensor | TensorLike) -> Tensor:
+        other = convert_tensor_input(other)
+        return Tensor(array=other.array / self.array)
 
     # ---------------------------------------------------------#
     ##################### Unary Operations #####################

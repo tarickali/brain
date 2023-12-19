@@ -10,6 +10,13 @@ from brain.core import Tensor, Node, Loss
 from brain.functional import sigmoid, softmax
 import brain.math as bmath
 
+__all__ = [
+    "BinaryCrossentropy",
+    "CategoricalCrossentropy",
+    "MeanSquaredError",
+    "MeanAbsoluteError",
+]
+
 
 class BinaryCrossentropy(Loss):
     """BinaryCrossentropy Loss
@@ -27,6 +34,7 @@ class BinaryCrossentropy(Loss):
         self.logits = logits
 
     def loss(self, y_true: Node, y_pred: Node) -> Node:
+        assert y_true.shape == y_pred.shape
         if self.logits:
             y_pred = sigmoid(y_pred)
 
@@ -64,6 +72,7 @@ class CategoricalCrossentropy(Loss):
         self.logits = logits
 
     def loss(self, y_true: Node, y_pred: Node) -> Node:
+        assert y_true.shape == y_pred.shape
         if self.logits:
             y_pred = softmax(y_pred)
 
@@ -93,6 +102,7 @@ class MeanSquaredError(Loss):
     """
 
     def loss(self, y_true: Node, y_pred: Node) -> Node:
+        assert y_true.shape == y_pred.shape
         return bmath.mean((y_true - y_pred) ** 2)
 
 
@@ -105,4 +115,5 @@ class MeanAbsoluteError(Loss):
     """
 
     def loss(self, y_true: Node, y_pred: Node) -> Node:
+        assert y_true.shape == y_pred.shape
         return bmath.mean(bmath.abs(y_true - y_pred))

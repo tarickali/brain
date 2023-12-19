@@ -1,12 +1,22 @@
 """
 title : utils.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/17
+update : @tarickali 23/12/18
 """
 
 import numpy as np
 from brain.core.types import Array, Shape, Dtype
-from brain.core.tensor import Tensor
+from brain.core.tensor import Tensor, Numeric
+
+__all__ = [
+    "zeros",
+    "zeros_like",
+    "ones",
+    "ones_like",
+    "full_like",
+    "expand_tensor",
+    "shrink_tensor",
+]
 
 
 def zeros(shape: Shape, dtype: Dtype) -> Tensor:
@@ -15,7 +25,7 @@ def zeros(shape: Shape, dtype: Dtype) -> Tensor:
 
 def zeros_like(tensor: Tensor | Array) -> Tensor:
     array = tensor.array if isinstance(tensor, Tensor) else tensor
-    return Tensor(np.zeros_like(array))
+    return Tensor(np.zeros_like(a=array))
 
 
 def ones(shape: Shape, dtype: Dtype) -> Tensor:
@@ -24,7 +34,16 @@ def ones(shape: Shape, dtype: Dtype) -> Tensor:
 
 def ones_like(tensor: Tensor | Array) -> Tensor:
     array = tensor.array if isinstance(tensor, Tensor) else tensor
-    return Tensor(np.ones_like(array))
+    return Tensor(np.ones_like(a=array))
+
+
+def full(shape: Shape, value: Numeric) -> Tensor:
+    return Tensor(np.full(shape=shape, fill_value=value))
+
+
+def full_like(tensor: Tensor | Array, value: Numeric) -> Tensor:
+    array = tensor.array if isinstance(tensor, Tensor) else tensor
+    return Tensor(np.full_like(a=array, fill_value=value))
 
 
 def expand_tensor(tensor: Tensor, shape: Shape) -> Tensor:

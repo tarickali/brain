@@ -1,26 +1,14 @@
-import numpy as np
-from brain.core import Node
-from brain.modules import Linear, Flatten
-from brain.models import Sequential
+"""
+title : main.py
+create : @tarickali 23/12/18
+update : @tarickali 23/12/18
+"""
+
+from examples import regression
 
 
 def main():
-    model = Sequential(
-        [
-            Linear(16, 32, "relu"),
-            Linear(32, 32, "relu"),
-            Linear(32, 10, "sigmoid"),
-            Flatten(),
-        ]
-    )
-    X = Node(np.random.randn(32, 16))
-
-    y = model(X)
-    print(y)
-
-    y.backward()
-
-    print(model.parameters[0]["W"])
+    regression()
 
 
 if __name__ == "__main__":

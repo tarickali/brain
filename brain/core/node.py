@@ -16,10 +16,11 @@ NodeLike = Tensor | Array | Numeric
 
 
 class Node:
-    def __init__(self, data: NodeLike, dtype: Dtype = None) -> None:
-        self.data = data if isinstance(data, Tensor) else Tensor(data, dtype)
-        if dtype is not None:
-            self.data.cast(dtype)
+    def __init__(self, data: Node | NodeLike, dtype: Dtype = float) -> None:
+        if isinstance(data, Node):
+            self.data = Tensor(data.data.array, dtype=dtype)
+        else:
+            self.data = Tensor(data, dtype=dtype)
 
         self.grad = zeros_like(self.data)
 
@@ -134,6 +135,18 @@ class Node:
 
     def __truediv__(self, other: Node | NodeLike) -> Node:
         return self * other**-1
+
+    def __radd__(self, other: Node | NodeLike) -> Tensor:
+        return self + other
+
+    def __rsub__(self, other: Node | NodeLike) -> Tensor:
+        return -self + other
+
+    def __rmul__(self, other: Node | NodeLike) -> Tensor:
+        return self * other
+
+    def __rtruediv__(self, other: Node | NodeLike) -> Node:
+        return self**-1 * other
 
     # ---------------------------------------------------------#
     ##################### Unary Operations #####################

@@ -69,7 +69,7 @@ def relu(x: NodeLike, alpha: float = 0.0) -> Node:
     output.add_children((x,))
 
     def reverse():
-        grad = Tensor(alpha + (1 - alpha) * np.heaviside(arr, 0, dtype=arr.dtype))
+        grad = Tensor(alpha + (1 - alpha) * np.heaviside(arr, 0.0, dtype=arr.dtype))
         x.grad = grad * output.grad
 
     output.forward = "relu"
