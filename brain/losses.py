@@ -1,14 +1,11 @@
 """
 title : losses.py
 create : @tarickali 23/12/18
-update : @tarickali 23/12/18
+update : @tarickali 23/12/20
 """
 
-import numpy as np
-from brain.core.constants import eps
-from brain.core import Tensor, Node, Loss
-from brain.functional import sigmoid, softmax
-import brain.math as bmath
+from brain.core import Node, Loss
+from brain.functional.losses import *
 
 __all__ = [
     "BinaryCrossentropy",
@@ -21,10 +18,10 @@ __all__ = [
 class BinaryCrossentropy(Loss):
     """BinaryCrossentropy Loss
 
-    Computes the crossentropy loss between binary arrays y_true and y_pred
-    given by: `-mean(y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred))`.
+    Computes the crossentropy loss between binary arrays true and pred
+    given by: `-mean(true * log(pred) + (1 - true) * log(1 - pred))`.
 
-    NOTE: This `Loss` can be used when y_pred are unactivated (logits) or
+    NOTE: This `Loss` can be used when pred are unactivated (logits) or
     are activated.
 
     """
@@ -33,36 +30,17 @@ class BinaryCrossentropy(Loss):
         super().__init__()
         self.logits = logits
 
-    def loss(self, y_true: Node, y_pred: Node) -> Node:
-        assert y_true.shape == y_pred.shape
-        if self.logits:
-            y_pred = sigmoid(y_pred)
-
-        pred = np.clip(y_pred.data.array, eps, 1.0 - eps)
-        true = y_true.data.array
-
-        data = -np.mean(true * np.log(pred) + (1 - true) * np.log(1 - pred))
-        output = Node(data)
-        output.add_children((y_pred,))
-
-        def reverse():
-            grad = (pred - true) / (pred * (1 - pred))
-            grad = Tensor(grad / pred.size)
-            y_pred.grad = grad * output.grad
-
-        output.forward = "binary_crossentropy"
-        output.reverse = reverse
-
-        return output
+    def loss(self, true: Node, pred: Node) -> Node:
+        return binary_crossentropy(true, pred, self.logits)
 
 
 class CategoricalCrossentropy(Loss):
     """CategoricalCrossentropy Loss
 
-    Computes the crossentropy loss between multiclass arrays y_true and y_pred
-    given by: `-mean(y_true * log(y_pred))`.
+    Computes the crossentropy loss between multiclass arrays true and pred
+    given by: `-mean(true * log(pred))`.
 
-    NOTE: This `Loss` can be used when y_pred are unactivated (logits) or
+    NOTE: This `Loss` can be used when pred are unactivated (logits) or
     are activated.
 
     """
@@ -71,49 +49,29 @@ class CategoricalCrossentropy(Loss):
         super().__init__()
         self.logits = logits
 
-    def loss(self, y_true: Node, y_pred: Node) -> Node:
-        assert y_true.shape == y_pred.shape
-        if self.logits:
-            y_pred = softmax(y_pred)
-
-        pred = np.clip(y_pred.data.array, eps, 1.0 - eps)
-        true = y_true.data.array
-
-        data = -np.sum(true * np.log(pred)) / pred.shape[0]
-        output = Node(data)
-        output.add_children((y_pred,))
-
-        def reverse():
-            grad = Tensor((pred - true) / pred.shape[0])
-            y_pred.grad = grad * output.grad
-
-        output.forward = "categorical_crossentropy"
-        output.reverse = reverse
-
-        return output
+    def loss(self, true: Node, pred: Node) -> Node:
+        return categorical_crossentropy(true, pred, self.logits)
 
 
 class MeanSquaredError(Loss):
     """MeanSquaredError Loss
 
-    Computes the squared error between y_true and y_pred given by:
-    `mean((y_true - y_pred)**2)`
+    Computes the squared error between true and pred given by:
+    `mean((true - pred)**2)`
 
     """
 
-    def loss(self, y_true: Node, y_pred: Node) -> Node:
-        assert y_true.shape == y_pred.shape
-        return bmath.mean((y_true - y_pred) ** 2)
+    def loss(self, true: Node, pred: Node) -> Node:
+        return mean_squared_error(true, pred)
 
 
 class MeanAbsoluteError(Loss):
     """MeanAbsoluteError Loss
 
-    Computes the squared error between y_true and y_pred given by:
-    `mean((y_true - y_pred)**2)`
+    Computes the squared error between true and pred given by:
+    `mean((true - pred)**2)`
 
     """
 
-    def loss(self, y_true: Node, y_pred: Node) -> Node:
-        assert y_true.shape == y_pred.shape
-        return bmath.mean(bmath.abs(y_true - y_pred))
+    def loss(self, true: Node, pred: Node) -> Node:
+        return mean_absolute_error(true, pred)

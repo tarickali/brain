@@ -1,6 +1,6 @@
 """
-title : functional.py
-create : @tarickali 23/12/15
+title : activations.py
+create : @tarickali 23/12/20
 update : @tarickali 23/12/20
 """
 

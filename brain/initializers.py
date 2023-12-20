@@ -1,13 +1,13 @@
 """
 title : initializers.py
 create : @tarickali 23/12/15
-update : @tarickali 23/12/15
+update : @tarickali 23/12/20
 """
 
 
-import numpy as np
 from brain.core.types import Shape
 from brain.core import Tensor, Initializer
+from brain.functional.initializers import *
 
 __all__ = [
     "Zeros",
@@ -31,8 +31,8 @@ class Zeros(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        return Tensor(np.zeros(shape))
+    def init(self, shape: Shape) -> Tensor:
+        return zeros(shape)
 
 
 class Ones(Initializer):
@@ -42,8 +42,8 @@ class Ones(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        return Tensor(np.ones(shape))
+    def init(self, shape: Shape) -> Tensor:
+        return ones(shape)
 
 
 class Constant(Initializer):
@@ -57,8 +57,8 @@ class Constant(Initializer):
         super().__init__()
         self.value = value
 
-    def init(self, shape: Shape = None) -> Tensor:
-        return Tensor(np.full(shape, self.value))
+    def init(self, shape: Shape) -> Tensor:
+        return constant(shape, self.value)
 
 
 class RandomUniform(Initializer):
@@ -75,8 +75,8 @@ class RandomUniform(Initializer):
         self.low = low
         self.high = high
 
-    def init(self, shape: Shape = None) -> Tensor:
-        return Tensor(np.random.uniform(self.low, self.high, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return random_uniform(shape, self.low, self.high)
 
 
 class RandomNormal(Initializer):
@@ -92,8 +92,8 @@ class RandomNormal(Initializer):
         self.mean = mean
         self.std = std
 
-    def init(self, shape: Shape = None) -> Tensor:
-        return Tensor(np.random.normal(self.mean, self.std, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return random_normal(shape, self.mean, self.std)
 
 
 class XavierUniform(Initializer):
@@ -105,9 +105,8 @@ class XavierUniform(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        limit = np.sqrt(6.0 / (shape[0] + shape[1]))
-        return Tensor(np.random.uniform(-limit, limit, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return xavier_uniform(shape)
 
 
 class XavierNormal(Initializer):
@@ -119,9 +118,8 @@ class XavierNormal(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        std = np.sqrt(2.0 / (shape[0] + shape[1]))
-        return Tensor(np.random.normal(0.0, std, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return xavier_normal(shape)
 
 
 class HeUniform(Initializer):
@@ -133,9 +131,8 @@ class HeUniform(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        limit = np.sqrt(6.0 / shape[0])
-        return Tensor(np.random.uniform(-limit, limit, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return he_uniform(shape)
 
 
 class HeNormal(Initializer):
@@ -147,9 +144,8 @@ class HeNormal(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        std = np.sqrt(2.0 / shape[0])
-        return Tensor(np.random.normal(0.0, std, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return he_normal(shape)
 
 
 class LecunUniform(Initializer):
@@ -161,9 +157,8 @@ class LecunUniform(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        limit = np.sqrt(3.0 / shape[0])
-        return Tensor(np.random.uniform(-limit, limit, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return lecun_uniform(shape)
 
 
 class LecunNormal(Initializer):
@@ -175,6 +170,5 @@ class LecunNormal(Initializer):
 
     """
 
-    def init(self, shape: Shape = None) -> Tensor:
-        std = np.sqrt(1.0 / shape[0])
-        return Tensor(np.random.normal(0.0, std, shape))
+    def init(self, shape: Shape) -> Tensor:
+        return lecun_normal(shape)

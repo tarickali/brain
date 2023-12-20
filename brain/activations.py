@@ -1,11 +1,11 @@
 """
 title : activations.py
 create : @tarickali 23/12/15
-update : @tarickali 23/12/17
+update : @tarickali 23/12/20
 """
 
 from brain.core import Node, Activation
-from brain.functional import *
+from brain.functional.activations import *
 
 __all__ = [
     "Identity",

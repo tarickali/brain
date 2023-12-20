@@ -1,17 +1,15 @@
 """
 title : modules.py
 create : @tarickali 23/12/17
-update : @tarickali 23/12/19
+update : @tarickali 23/12/20
 """
 
 from typing import Any
-import numpy as np
-from scipy import signal
 
 from brain.core.types import Shape
-from brain.core import Tensor, Node, Module
+from brain.core import Node, Module
 from brain.factories import activation_factory, initializer_factory
-from brain.utils import flatten
+from brain.functional.modules import *
 
 __all__ = ["Linear", "Conv2d", "Flatten", "Activation"]
 
@@ -59,20 +57,19 @@ class Linear(Module):
     def forward(self, X: Node) -> Node:
         if not self.initialized:
             self.init_parameters(X.shape)
+        assert X.shape[1] == self.input_dim
 
         # Get weights and bias
         W, b = self.parameters["W"], self.parameters.get("b", None)
 
         # Compute linear transformation
-        if b is None:
-            Z = X @ W
-        else:
-            Z = X @ W + b
+        Z = linear(X, W, b)
 
         assert Z.shape == (X.shape[0], self.output_dim)
 
         # Compute activation
         A = self.act_fn(Z)
+        assert A.shape == (X.shape[0], self.output_dim)
 
         return A
 
@@ -155,53 +152,14 @@ class Conv2d(Module):
     def forward(self, X: Node) -> Node:
         if not self.initialized:
             self.init_parameters(X.shape)
-
         assert X.shape[1:] == self.input_shape
-        batch_size = X.shape[0]
 
-        # Get kernel
+        # Get kernel and bias
         K = self.parameters["K"]
+        B = self.parameters.get("B", None)
 
-        # Setup children for output node
-        children = (X, K)
-
-        # Compute output
-        x = X.data.array
-        k = K.data.array
-        data = np.zeros((batch_size,) + self.output_shape)
-        for i in range(self.out_channels):
-            for j in range(self.in_channels):
-                data[:, i] += signal.correlate(x[:, j], k[None, i, j], mode="valid")
-
-        # Include bias if present
-        if self.include_bias:
-            B = self.parameters["B"]
-            children += (B,)
-            data += B.data.array
-
-        # Create output node
-        output = Node(data)
-        output.add_children(children)
-
-        def reverse():
-            kgrad = np.zeros(self.kernel_shape)
-            xgrad = np.zeros((batch_size,) + self.input_shape)
-            ograd = output.grad.array
-
-            for i in range(self.out_channels):
-                for j in range(self.in_channels):
-                    kgrad[i, j] = signal.correlate(x[:, j], ograd[:, i], mode="valid")
-                    xgrad[:, j] += signal.convolve(
-                        ograd[:, i], k[None, i, j], mode="full"
-                    )
-            K.grad = Tensor(kgrad)
-            X.grad = Tensor(xgrad)
-
-            if self.include_bias:
-                B.grad = Tensor(ograd)
-
-        output.reverse = reverse
-        output.forward = "conv2d"
+        # Compute conv2d transformation
+        output = conv2d(X, K, B)
 
         # Compute activation
         output = self.act_fn(output)
