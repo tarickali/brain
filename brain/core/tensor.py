@@ -7,7 +7,7 @@ update : @tarickali 23/12/20
 from __future__ import annotations
 from typing import Any
 import numpy as np
-from brain.core.types import Array, Number, ArrayLike, Dtype, Shape
+from brain.core.types import Array, List, Number, ArrayLike, Dtype, Shape
 
 __all__ = ["Tensor"]
 
@@ -33,6 +33,16 @@ class Tensor:
         return self.array.item()
 
     # ---------------------------------------------------------#
+    #################### Getter and Setter ####################
+    # ---------------------------------------------------------#
+
+    def __getitem__(self, key: int | tuple[int] | slice) -> Array | Number:
+        return self.array[key]
+
+    def __setitem__(self, key: int | tuple[int] | slice, value: ArrayLike) -> None:
+        self.array[key] = value
+
+    # ---------------------------------------------------------#
     #################### Binary Operations ####################
     # ---------------------------------------------------------#
 
@@ -56,16 +66,16 @@ class Tensor:
         other = convert_tensor_input(other)
         return Tensor(array=self.array / other.array)
 
-    def __radd__(self, other: Tensor | TensorLike) -> Tensor:
+    def __radd__(self, other: Tensor | List | Number) -> Tensor:
         return self + other
 
-    def __rsub__(self, other: Tensor | TensorLike) -> Tensor:
+    def __rsub__(self, other: Tensor | List | Number) -> Tensor:
         return -self + other
 
-    def __rmul__(self, other: Tensor | TensorLike) -> Tensor:
+    def __rmul__(self, other: Tensor | List | Number) -> Tensor:
         return self * other
 
-    def __rtruediv__(self, other: Tensor | TensorLike) -> Tensor:
+    def __rtruediv__(self, other: Tensor | List | Number) -> Tensor:
         other = convert_tensor_input(other)
         return Tensor(array=other.array / self.array)
 

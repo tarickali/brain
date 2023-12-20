@@ -6,7 +6,7 @@ update : @tarickali 23/12/20
 
 from __future__ import annotations
 from typing import Any
-from brain.core.types import Array, Number, ArrayLike, Shape, Dtype
+from brain.core.types import Array, List, Number, ArrayLike, Shape, Dtype
 from brain.core.tensor import Tensor
 from brain.core.tensor_utils import zeros_like, ones_like, expand_tensor, shrink_tensor
 
@@ -56,6 +56,16 @@ class Node:
         self.grad = ones_like(self.data)
         for x in reversed(order):
             x.reverse()
+
+    # ---------------------------------------------------------#
+    #################### Getter and Setter ####################
+    # ---------------------------------------------------------#
+
+    def __getitem__(self, key: int | tuple[int] | slice) -> Array | Number:
+        return self.data[key]
+
+    def __setitem__(self, key: int | tuple[int] | slice, value: ArrayLike) -> None:
+        self.data[key] = value
 
     # ---------------------------------------------------------#
     #################### Binary Operations ####################
@@ -140,16 +150,16 @@ class Node:
     def __truediv__(self, other: Node | NodeLike) -> Node:
         return self * other**-1
 
-    def __radd__(self, other: Node | NodeLike) -> Tensor:
+    def __radd__(self, other: Node | Tensor | List | Number) -> Node:
         return self + other
 
-    def __rsub__(self, other: Node | NodeLike) -> Tensor:
+    def __rsub__(self, other: Node | Tensor | List | Number) -> Node:
         return -self + other
 
-    def __rmul__(self, other: Node | NodeLike) -> Tensor:
+    def __rmul__(self, other: Node | Tensor | List | Number) -> Node:
         return self * other
 
-    def __rtruediv__(self, other: Node | NodeLike) -> Node:
+    def __rtruediv__(self, other: Node | Tensor | List | Number) -> Node:
         return self**-1 * other
 
     # ---------------------------------------------------------#
