@@ -1,7 +1,7 @@
 """
 title : models.py
 create : @tarickali 23/12/17
-update : @tarickali 23/12/17
+update : @tarickali 23/12/19
 """
 
 from brain.core import Node, Module, Model
@@ -15,7 +15,7 @@ class Sequential(Model):
 
     def forward(self, X: Node) -> Node:
         for module in self.modules:
-            X = module.forward(X)
+            X = module(X)
         return X
 
     def zero_grad(self) -> None:

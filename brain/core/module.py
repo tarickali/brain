@@ -1,12 +1,13 @@
 """
 title : module.py
 create : @tarickali 23/12/17
-update : @tarickali 23/12/18
+update : @tarickali 23/12/19
 """
 
 from typing import Any
 from abc import ABC, abstractmethod
 
+from brain.core.types import Shape
 from brain.core import Node
 
 __all__ = ["Module"]
@@ -19,6 +20,7 @@ class Module(ABC):
         super().__init__()
         self.parameters: dict[str, Node] = {}
         self.trainable: bool = True
+        self.initialized: bool = False
 
     @abstractmethod
     def forward(self, X: Node) -> Node:
@@ -26,20 +28,20 @@ class Module(ABC):
 
         Parameters
         ----------
-        X : np.ndarray
+        X : Node
 
         Returns
         -------
-        np.ndarray
+        Node
 
         """
 
         raise NotImplementedError
 
-    def init_parameters(self) -> None:
+    def init_parameters(self, input_shape: int | Shape) -> None:
         """Initialize the parameters of the Module."""
 
-        return
+        return None
 
     def zero_grad(self) -> None:
         """Clear the gradients for each parameter in the Module."""

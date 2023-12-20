@@ -15,12 +15,13 @@ __all__ = ["flatten"]
 def flatten(x: NodeLike) -> Node:
     x = x if isinstance(x, Node) else Node(x)
     arr = x.data.array
-    data = arr.reshape(-1, 1)
+    data = arr.reshape(-1, np.prod(arr.shape[1:]))
     output = Node(data)
+    output.add_children((x,))
 
     def reverse():
         grad = Tensor(output.grad.array.reshape(arr.shape))
-        x.grad = grad
+        x.grad += grad
 
     output.forward = "flatten"
     output.reverse = reverse

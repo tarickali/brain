@@ -1,7 +1,7 @@
 """
 title : regression.py
 create : @tarickali 23/12/18
-update : @tarickali 23/12/18
+update : @tarickali 23/12/19
 """
 
 import numpy as np
@@ -14,10 +14,10 @@ from brain.models import Sequential
 from brain.losses import MeanSquaredError
 from brain.optimizers import Adam
 
-__all__ = ["regression"]
+__all__ = ["regression_driver"]
 
 
-def regression():
+def regression_driver():
     # Set random seed
     np.random.seed(42)
 
@@ -32,9 +32,9 @@ def regression():
     # Create model
     model = Sequential(
         [
-            Linear(100, 64, "relu"),
-            Linear(64, 32, "relu"),
-            Linear(32, 1),
+            Linear(64, "relu"),
+            Linear(32, "relu"),
+            Linear(1),
         ]
     )
 
