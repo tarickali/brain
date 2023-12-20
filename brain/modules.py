@@ -18,7 +18,7 @@ class Linear(Module):
     def __init__(
         self,
         output_dim: int,
-        activation: str | dict[str, Any] = None,
+        activation: str | dict[str, Any] = "identity",
         weight_initializer: str | dict[str, Any] = "xavier_normal",
         bias_initializer: str | dict[str, Any] = "zeros",
         include_bias: bool = True,
@@ -41,7 +41,7 @@ class Linear(Module):
         # Set input_dim to None until parameters are initialized
         self.input_dim = None
 
-    def init_parameters(self, input_shape: int | Shape) -> None:
+    def build(self, input_shape: int | Shape) -> None:
         assert len(input_shape) == 2
         self.input_dim = input_shape[1]
 
@@ -56,7 +56,7 @@ class Linear(Module):
 
     def forward(self, X: Node) -> Node:
         if not self.initialized:
-            self.init_parameters(X.shape)
+            self.build(X.shape)
         assert X.shape[1] == self.input_dim
 
         # Get weights and bias
@@ -93,7 +93,7 @@ class Conv2d(Module):
         kernel_size: int | tuple[int, int],
         # stride: int | tuple[int, int] = 1,
         # padding: str = "valid",
-        activation: str = "relu",
+        activation: str = "identity",
         kernel_initializer: str | dict[str, Any] = "xavier_normal",
         bias_initializer: str | dict[str, Any] = "zeros",
         include_bias: bool = True,
@@ -122,7 +122,7 @@ class Conv2d(Module):
         self.output_shape = None
         self.kernel_shape = None
 
-    def init_parameters(self, input_shape: int | Shape) -> None:
+    def build(self, input_shape: int | Shape) -> None:
         assert len(input_shape) == 4
         _, in_channels, in_height, in_width = input_shape
         assert in_channels == self.in_channels
@@ -151,7 +151,7 @@ class Conv2d(Module):
 
     def forward(self, X: Node) -> Node:
         if not self.initialized:
-            self.init_parameters(X.shape)
+            self.build(X.shape)
         assert X.shape[1:] == self.input_shape
 
         # Get kernel and bias

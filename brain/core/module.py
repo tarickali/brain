@@ -1,7 +1,7 @@
 """
 title : module.py
 create : @tarickali 23/12/17
-update : @tarickali 23/12/19
+update : @tarickali 23/12/20
 """
 
 from typing import Any
@@ -38,8 +38,8 @@ class Module(ABC):
 
         raise NotImplementedError
 
-    def init_parameters(self, input_shape: int | Shape) -> None:
-        """Initialize the parameters of the Module."""
+    def build(self, input_shape: int | Shape) -> None:
+        """Build the Module parameters based on the given input shape."""
 
         return None
 

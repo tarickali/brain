@@ -1,7 +1,7 @@
 """
 title : factories.py
 create : @tarickali 23/12/15
-update : @tarickali 23/12/17
+update : @tarickali 23/12/20
 """
 
 from typing import Any
@@ -10,16 +10,12 @@ from brain.initializers import *
 from brain.activations import *
 
 
-def initializer_factory(
-    initializer: str | dict[str, Any] | Initializer = None
-) -> Initializer:
+def initializer_factory(initializer: str | dict[str, Any] | Initializer) -> Initializer:
     """Factory function to create Initializer objects.
-
-    If initializer = None, returns the RandomNormal initializer.
 
     Parameters
     ----------
-    initializer : str | dict[str, Any] | Initializer = None
+    initializer : str | dict[str, Any] | Initializer
         If str, then represents the name of the Initializer.
         If dict, then represents the name, param dict of the Initializer.
         If Initializer, then returns the same object.
@@ -35,10 +31,7 @@ def initializer_factory(
 
     """
 
-    if initializer is None:
-        name = "random_normal"
-        params = {}
-    elif isinstance(initializer, str):
+    if isinstance(initializer, str):
         name = initializer
         params = {}
     elif isinstance(initializer, dict):
@@ -76,16 +69,12 @@ def initializer_factory(
             raise ValueError(f"Initializer: {name} not available.")
 
 
-def activation_factory(
-    activation: str | dict[str, Any] | Activation = None
-) -> Activation:
+def activation_factory(activation: str | dict[str, Any] | Activation) -> Activation:
     """Factory function to create Activation objects.
-
-    If activation = None, returns the Identity activation.
 
     Parameters
     ----------
-    activation : str | dict[str, Any] | Activation = None
+    activation : str | dict[str, Any] | Activation
         If str, then represents the name of the Activation.
         If dict, then represents the name, param dict of the Activation.
         If Activation, then returns the same object.
@@ -101,10 +90,7 @@ def activation_factory(
 
     """
 
-    if activation is None:
-        name = "identity"
-        params = {}
-    elif isinstance(activation, str):
+    if isinstance(activation, str):
         name = activation
         params = {}
     elif isinstance(activation, dict):
