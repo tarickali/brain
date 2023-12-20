@@ -1,25 +1,23 @@
 """
 title : tensor.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/18
+update : @tarickali 23/12/20
 """
 
 from __future__ import annotations
 from typing import Any
 import numpy as np
-from brain.core.types import Array, Numeric, Dtype, Shape
+from brain.core.types import Array, Number, ArrayLike, Dtype, Shape
 
 __all__ = ["Tensor"]
 
-TensorLike = Array | Numeric
+TensorLike = ArrayLike
 
 
 class Tensor:
     def __init__(self, array: Tensor | TensorLike, dtype: Dtype = float) -> None:
-        if isinstance(array, Tensor):
-            self.array = np.array(array.array, dtype=dtype)
-        else:
-            self.array = np.array(array, dtype=dtype)
+        array = array.array if isinstance(array, Tensor) else array
+        self.array: np.ndarray = np.array(array, dtype=dtype)
 
     def cast(self, dtype: Dtype) -> None:
         if dtype != self.dtype:
@@ -27,6 +25,12 @@ class Tensor:
 
     def transpose(self) -> Tensor:
         return Tensor(self.array.T)
+
+    def numpy(self) -> Array:
+        return self.array
+
+    def item(self) -> Number:
+        return self.array.item()
 
     # ---------------------------------------------------------#
     #################### Binary Operations ####################
@@ -69,8 +73,8 @@ class Tensor:
     ##################### Unary Operations #####################
     # ---------------------------------------------------------#
 
-    def __pow__(self, other: Numeric) -> Tensor:
-        if not isinstance(other, Numeric):
+    def __pow__(self, other: Number) -> Tensor:
+        if not isinstance(other, Number):
             raise ValueError(f"Cannot perform operation on {type(other)}")
         return Tensor(array=self.array**other)
 
@@ -106,7 +110,7 @@ class Tensor:
         return Tensor(array=self.array < other.array)
 
     def __repr__(self) -> str:
-        return f"Tensor(array={self.array}, dtype={self.dtype}, shape={self.shape})"
+        return f"Tensor({self.array}, dtype={self.dtype}, shape={self.shape})"
 
     @property
     def T(self) -> Tensor:
@@ -119,10 +123,6 @@ class Tensor:
     @property
     def dtype(self) -> Shape:
         return self.array.dtype
-
-    @property
-    def data(self) -> Array:
-        return self.array.data
 
     @property
     def ndim(self) -> int:

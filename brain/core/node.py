@@ -1,26 +1,24 @@
 """
 title : node.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/18
+update : @tarickali 23/12/20
 """
 
 from __future__ import annotations
 from typing import Any
-from brain.core.types import Array, Numeric, Shape, Dtype
+from brain.core.types import Array, Number, ArrayLike, Shape, Dtype
 from brain.core.tensor import Tensor
 from brain.core.tensor_utils import zeros_like, ones_like, expand_tensor, shrink_tensor
 
 __all__ = ["Node"]
 
-NodeLike = Tensor | Array | Numeric
+NodeLike = Tensor | ArrayLike
 
 
 class Node:
     def __init__(self, data: Node | NodeLike, dtype: Dtype = float) -> None:
-        if isinstance(data, Node):
-            self.data = Tensor(data.data.array, dtype=dtype)
-        else:
-            self.data = Tensor(data, dtype=dtype)
+        data = data.data.array if isinstance(data, Node) else data
+        self.data = Tensor(data, dtype=dtype)
 
         self.grad = zeros_like(self.data)
 
@@ -29,6 +27,12 @@ class Node:
 
         self.children = ()
         self.trainable = True
+
+    def numpy(self) -> Array:
+        return self.data.numpy()
+
+    def item(self) -> Number:
+        return self.data.item()
 
     def zero_grad(self) -> None:
         self.grad = zeros_like(self.grad)
@@ -152,8 +156,8 @@ class Node:
     ##################### Unary Operations #####################
     # ---------------------------------------------------------#
 
-    def __pow__(self, other: Numeric) -> Node:
-        if not isinstance(other, Numeric):
+    def __pow__(self, other: Number) -> Node:
+        if not isinstance(other, Number):
             raise ValueError(f"Cannot perform operation on {type(other)}")
 
         output = Node(data=self.data**other)
@@ -212,7 +216,7 @@ class Node:
         return id(self)
 
     def __repr__(self) -> str:
-        return f"Node(data={self.data})"
+        return f"Node({self.data.array}, dtype={self.dtype}, shape={self.shape})"
 
     @property
     def shape(self) -> Shape:

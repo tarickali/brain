@@ -1,15 +1,15 @@
 """
 title : math.py
 create : @tarickali 23/12/17
-update : @tarickali 23/12/18
+update : @tarickali 23/12/20
 """
 
 import numpy as np
-from brain.core.types import Array, Numeric
+from brain.core.types import Array, Number
 from brain.core.constants import eps
 from brain.core import Node, Tensor
 
-NodeLike = Node | Tensor | Array | Numeric
+NodeLike = Node | Tensor | Array | Number
 
 __all__ = ["abs", "sum", "mean", "exp", "log"]
 

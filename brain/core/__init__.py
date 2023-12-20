@@ -21,7 +21,7 @@ __all__ = [
     "Model",
     # types #
     "Array",
-    "Numeric",
+    "Number",
     "Dtype",
     "Shape",
     # constants #

@@ -1,14 +1,15 @@
 """
 title : types.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/17
+update : @tarickali 23/12/20
 """
 
 from numpy import ndarray, dtype, number
 
-__all__ = ["Array", "Numeric", "Dtype", "Shape"]
+__all__ = ["Array", "Number", "ArrayLike", "Dtype", "Shape"]
 
-Array = ndarray | list
-Numeric = number | int | float | bool
+Array = ndarray
+Number = number | int | float | bool
+ArrayLike = Array | list | Number
 Dtype = dtype | int | float | bool
 Shape = tuple[None | int, ...]

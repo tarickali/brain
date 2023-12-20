@@ -1,12 +1,12 @@
 """
 title : utils.py
 create : @tarickali 23/12/13
-update : @tarickali 23/12/18
+update : @tarickali 23/12/20
 """
 
 import numpy as np
 from brain.core.types import Array, Shape, Dtype
-from brain.core.tensor import Tensor, Numeric
+from brain.core.tensor import Tensor, Number
 
 __all__ = [
     "zeros",
@@ -37,11 +37,11 @@ def ones_like(tensor: Tensor | Array) -> Tensor:
     return Tensor(np.ones_like(a=array))
 
 
-def full(shape: Shape, value: Numeric) -> Tensor:
+def full(shape: Shape, value: Number) -> Tensor:
     return Tensor(np.full(shape=shape, fill_value=value))
 
 
-def full_like(tensor: Tensor | Array, value: Numeric) -> Tensor:
+def full_like(tensor: Tensor | Array, value: Number) -> Tensor:
     array = tensor.array if isinstance(tensor, Tensor) else tensor
     return Tensor(np.full_like(a=array, fill_value=value))
 
